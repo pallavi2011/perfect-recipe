@@ -17,7 +17,6 @@ import { newPassword } from "@/actions/new-password";
 
 import Link from "next/link";
 
-import { DEFAULT_LOGIN_REDIRECT } from "@/routes";
 
 
 const page = () => {

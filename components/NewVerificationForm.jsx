@@ -43,7 +43,7 @@ const NewVerificationForm = () => {
         
     },[onSubmit])
   return (
-    <Card className="w-full max-w-sm p-6 space-y-4">
+    <Card className="w-full mx-auto p-6 space-y-4">
         <div className='flex flex-col items-center justify-center space-y-5'>
             <h1>Confirming your email verification</h1>
             <BeatLoader color="#000" size={20} />

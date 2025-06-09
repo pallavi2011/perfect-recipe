@@ -27,21 +27,25 @@ export const NewRecipeSchema = z.object({
   title: z.string().min(1, "Title is required"),
   image: z.string().url("Invalid image URL"),
   description: z.string().min(1, "Description is required"),
-  ingredients: z.string().min(1, "Ingredients are required"),
-  instructions: z.string().min(1, "Instructions are required"),
+  ingredients: z
+    .array(z.string().min(1, "Ingredient cannot be empty"))
+    .min(1, "At least one ingredient is required"),
+  instructions:z.array(z.string().min(1, "Ingredient cannot be empty"))
+    .min(1, "At least one ingredient is required"),
   servings: z.string().min(1, "Servings are required"),
-  cookingTime: z.string().min(1, "Cooking time is required"),
-  prepTime: z.string().min(1, "Prep time is required"),
+  cookingTimeHours: z.string().min(1, "Cooking time is required"),
+  cookingTimeMinutes: z.string().min(1, "Cooking time is required"),
+  PrepTimeHours: z.string().min(1, "Prep time is required"),
+  PrepTimeMinutes: z.string().min(1, "Prep time is required"),
   cuisine: z.string().min(1, "Cuisine is required"),
-  nutrition: z.object({
-    calories: z.string().min(1, "Calories are required"),
-    protein: z.string().min(1, "Protein is required"),
-    fat: z.string().min(1, "Fat is required"),
-    carbohydrates: z.string().min(1, "Carbohydrates are required"),
-    fiber: z.string().min(1, "Fiber is required"),
-    netCarbs: z.string().min(1, "Net carbs are required"),
-    sodium: z.string().min(1, "Sodium is required"),
-    cholesterol: z.string().min(1, "Cholesterol is required"),
-  }),
+ 
+   calories: z.preprocess(val => val === "" ? undefined : Number(val), z.number().min(0, "Calories required")),
+  protein: z.preprocess(val => val === "" ? undefined : Number(val), z.number().min(0, "protein is required")),
+  fats: z.preprocess(val => val === "" ? undefined : Number(val), z.number().min(0, "fats are required")),
+  carbohydrates: z.preprocess(val => val === "" ? undefined : Number(val), z.number().min(0, "carbs are required")),
+  fiber: z.preprocess(val => val === "" ? undefined : Number(val), z.number().min(0, "fiber are required")),
+  netCarbs: z.preprocess(val => val === "" ? undefined : Number(val), z.number().min(0, "netCarbs are required")),
+  sodium: z.preprocess(val => val === "" ? undefined : Number(val), z.number().min(0, "sodium are required")),
+  cholesterol: z.preprocess(val => val === "" ? undefined : Number(val), z.number().min(0, "cholesterol are required")),
+});
   
-})

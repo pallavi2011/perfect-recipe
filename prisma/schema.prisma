@@ -6,7 +6,7 @@
 
 generator client {
   provider = "prisma-client-js"
-  output   = "../lib/generated/prisma"
+  
 }
 
 datasource db {
@@ -62,30 +62,54 @@ model VerificationToken {
   @@unique([email, token])
 }
 
-model Recipe{
-  id       String   @id @default(cuid())
-  title    String
-  description String
-  ingredients String[]
-  instructions String[]
-  imageUrl String
-  servings Int
-  cookingTime Int
-  prepTime Int
-  cuisine String
-  collection String
-  calories String
-  carbs String
-  protein String
-  fats  String
-  fiber String
-  netCarbs String
-  sodium String
-  cholesterol String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  userId   String
-  user     User     @relation(fields: [userId], references: [id])
+model Recipe {
+  id    String @id @default(cuid())   
+  userId            String        
+  user              User          @relation(fields: [userId], references: [id], onDelete: Cascade)    
+  title              String
+  image              String
+  description        String
+  servings           String
+  cookingTimeHours   String
+  cookingTimeMinutes String
+  PrepTimeHours      String
+  PrepTimeMinutes    String
+  cuisine            String
+
+  ingredients        Ingredient[]  // Relation
+  instructions       Instruction[] // Relation
+  nutrition          Nutrition?    // Relation
+
+  createdAt          DateTime      @default(now())
+  updatedAt          DateTime      @updatedAt
+}
+
+model Ingredient {
+  id        String  @id @default(cuid())
+  name      String
+  recipeId  String
+  recipe    Recipe  @relation(fields: [recipeId], references: [id])
+}
+
+model Instruction {
+  id        String  @id @default(cuid())
+  step      String
+  recipeId  String
+  recipe    Recipe  @relation(fields: [recipeId], references: [id])
+}
+model Nutrition {
+  id             Int     @id @default(autoincrement())
+  calories       Int
+  protein        Int
+  fats           Int
+  carbohydrates  Int
+  fiber          Int
+  netCarbs       Int
+  sodium         Int
+  cholesterol    Int
+  recipeId      String  @unique
+  recipe         Recipe  @relation(fields: [recipeId], references: [id])
+  
 }
 
 model PasswordResetToken {
