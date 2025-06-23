@@ -49,3 +49,9 @@ export const NewRecipeSchema = z.object({
   cholesterol: z.preprocess(val => val === "" ? undefined : Number(val), z.number().min(0, "cholesterol are required")),
 });
   
+export const ProfileSchema = z.object({
+  name: z.string().min(1, "Username is required"),
+  email: z.string().email("Invalid email address"),
+  experience: z.string().min(1, "Experience is required"),
+ 
+});

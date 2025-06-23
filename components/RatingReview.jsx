@@ -1,20 +1,34 @@
-import React from 'react'
-import { FaStar } from "react-icons/fa";
+// StarRating.jsx
+import React, { useState } from "react";
 
-function RatingReview({rating}) {
+const StarRating = ({ value = 0, onChange, max = 5, size = 32, color = "#B55D51" }) => {
+  const [hovered, setHovered] = useState(0);
+
   return (
-    <div className='flex'>
-      {[...Array(5)].map((_, index)  => {
-        return (  
-          <FaStar
-          key={index}
-          size={15}
-          color={index < rating ? "#B55D51" : "#e4e5e9"} // Color based on rating
-        />
-        )
+    <div style={{ display: "flex", gap: 4 }}>
+      {[...Array(max)].map((_, i) => {
+        const starValue = i + 1;
+        return (
+          <span
+            key={starValue}
+            style={{
+              cursor: "pointer",
+              fontSize: size,
+              color: starValue <= (hovered || value) ? color : "#e5e7eb",
+              transition: "color 0.2s",
+            }}
+            onClick={() => onChange && onChange(starValue)}
+            onMouseEnter={() => setHovered(starValue)}
+            onMouseLeave={() => setHovered(0)}
+            role="button"
+            aria-label={`Rate ${starValue} star${starValue > 1 ? "s" : ""}`}
+          >
+            ★
+          </span>
+        );
       })}
     </div>
-  )
-}
+  );
+};
 
-export default RatingReview;
+export default StarRating;

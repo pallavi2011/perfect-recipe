@@ -125,13 +125,13 @@ const UploadExample = ({form}) => {
       control={form.control}
       name="image"
       render={({ field }) => (
-        <div className='flex flex-col gap-y-4'>
-          <label className='text-lg'>Recipe Image:</label>
-          <div className='flex flex-col items-center gap-y-3 px-10 py-10 md:px-16 md:py-16 lg:px-20 lg:py-20 border-[0.9px] rounded-md border-gray-3'>
-            <label className='text-lg text-nowrap'>Upload Your Recipe Image</label>
+        <div className="flex flex-col gap-y-4 w-full">
+          <label className="text-lg">Recipe Image:</label>
+          <div className="flex flex-col items-center gap-y-3 px-4 py-6 sm:px-6 sm:py-8 border rounded-md border-gray-3 w-full max-w-[350px] mx-auto">
+            <label className="text-base text-nowrap">Upload Your Recipe Image</label>
             <label
               htmlFor="file-upload"
-              className="border-[0.8px] inline-block px-2 py-[1.5px] rounded-md text-center cursor-pointer border-primary max-w-[150px]  text-black"
+              className="border border-primary inline-block px-2 py-1 rounded-md text-center cursor-pointer max-w-[150px] text-black"
             >
               Choose file
             </label>
@@ -141,18 +141,31 @@ const UploadExample = ({form}) => {
               className="hidden"
               ref={fileInputRef}
             />
-            <button type="button" className="bg-primary text-white font-medium text-md px-3 py-1 rounded-lg " onClick={handleUpload}>
+            <button
+              type="button"
+              className="bg-primary text-white font-medium text-md px-3 py-1 rounded-lg"
+              onClick={handleUpload}
+            >
               Upload
             </button>
             {field.value && (
-              <img src={field.value} alt="Recipe" className="mt-2 max-h-32" />
+              <img
+                src={field.value}
+                alt="Recipe"
+                className="mt-2 max-h-28 w-auto rounded-md object-cover"
+                style={{ maxWidth: "120px" }}
+              />
             )}
-            Upload progress: <progress value={progress} max={100}></progress>
-            <span className='text[10px] text-gray-3 text-nowrap'>Max file size 20 MB | Supports: JPG, PNG</span>
-          </div>
-        </div>
-      )}
-    />
+            <div className="w-full">
+              <progress value={progress} max={100} className="w-full"></progress>
+            </div>
+            <span className="text-xs text-gray-3 text-nowrap">
+              Max file size 20 MB | Supports: JPG, PNG
+            </span>
+      </div>
+    </div>
+  )}
+/>
 
 
             

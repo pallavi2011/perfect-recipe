@@ -11,9 +11,11 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { useRouter } from "next/navigation";
 
 const header = () => {
     const user = useCurrentUser();
+    const router = useRouter();
      const onClick = () =>{
           signOut({
             callbackUrl: "/",
@@ -48,8 +50,9 @@ const header = () => {
           </div>
         </DropdownMenuTrigger>
         <DropdownMenuContent>
-          <DropdownMenuItem onClick={onClick} className="cursor-pointer">Sign Out</DropdownMenuItem>
-          <DropdownMenuItem>Billing</DropdownMenuItem>
+         
+          <DropdownMenuItem onClick={() => router.push('/profile')}>Profile</DropdownMenuItem>
+           <DropdownMenuItem onClick={onClick} className="cursor-pointer">Sign Out</DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
     ) : (

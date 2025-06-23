@@ -22,9 +22,14 @@ model User{
   emailVerified DateTime?
   image         String?
   password      String?
+  bio           String?
+  username      String?         @unique
+  experience    String?
   
   accounts      Account[]
   recipes       Recipe[]
+  ratings       Rating[]
+  comments      Comment[]
   
  
   createdAt DateTime @default(now())
@@ -79,6 +84,8 @@ model Recipe {
   ingredients        Ingredient[]  // Relation
   instructions       Instruction[] // Relation
   nutrition          Nutrition?    // Relation
+  ratings            Rating[]      // Relation
+  comments    Comment[]
 
   createdAt          DateTime      @default(now())
   updatedAt          DateTime      @updatedAt
@@ -88,14 +95,14 @@ model Ingredient {
   id        String  @id @default(cuid())
   name      String
   recipeId  String
-  recipe    Recipe  @relation(fields: [recipeId], references: [id])
+  recipe    Recipe  @relation(fields: [recipeId], references: [id], onDelete: Cascade)
 }
 
 model Instruction {
   id        String  @id @default(cuid())
   step      String
   recipeId  String
-  recipe    Recipe  @relation(fields: [recipeId], references: [id])
+  recipe    Recipe  @relation(fields: [recipeId], references: [id],onDelete: Cascade)
 }
 model Nutrition {
   id             Int     @id @default(autoincrement())
@@ -108,8 +115,34 @@ model Nutrition {
   sodium         Int
   cholesterol    Int
   recipeId      String  @unique
-  recipe         Recipe  @relation(fields: [recipeId], references: [id])
+  recipe         Recipe  @relation(fields: [recipeId], references: [id],onDelete: Cascade)
   
+}
+
+model Rating {
+  id        String   @id @default(uuid())
+  value     Int      // 1 to 5 (for stars)
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String
+  recipe    Recipe   @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+  recipeId  String
+  createdAt DateTime @default(now())
+
+  @@unique([userId, recipeId])
+}
+
+model Comment {
+  id        String   @id @default(uuid())
+  text      String
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String
+  recipe    Recipe   @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+  recipeId  String
+  
+  parentId  String?  // For nested replies (optional)
+  parent    Comment? @relation("CommentReplies", fields: [parentId], references: [id],onDelete: Cascade)
+  replies   Comment[] @relation("CommentReplies")
 }
 
 model PasswordResetToken {

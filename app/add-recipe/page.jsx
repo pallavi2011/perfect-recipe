@@ -16,6 +16,14 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog"
+import {
   Form,
   FormControl,
   FormField,
@@ -32,7 +40,7 @@ const Page = () => {
 
       const user = useCurrentUser()
       const router = useRouter();
-    
+      const [dialogOpen, setDialogOpen] = useState(false);
      
       const getInitialFormValues = () => {
     if (typeof window !== "undefined") {
@@ -120,11 +128,11 @@ useEffect(() => {
 }, [instructions, form]);
 
         function onSubmit(values) {
-            console.log("submit", values)
+            
             setError("");
             setSuccess(""); 
         
-            startTransition(() => {
+      startTransition(() => {
         const cookingTimeTotalMinutes =
         (parseInt(values.cookingTimeHours || "0", 10) * 60) +
         parseInt(values.cookingTimeMinutes || "0", 10);
@@ -145,9 +153,14 @@ useEffect(() => {
             .then((data) => {
               setError(data.error);
               setSuccess(data.success);
+              localStorage.removeItem(LOCAL_STORAGE_KEY)
+              if(data.success){
+                setDialogOpen(true);
+                 localStorage.removeItem(LOCAL_STORAGE_KEY)
+              }
             })
           })
-        localStorage.removeItem(LOCAL_STORAGE_KEY)
+        
         }
 
        useEffect(() => {
@@ -616,6 +629,29 @@ disabled={isPending} className='bg-primary text-white rounded-md px-10 py-[5.5px
                
          </form>
         </Form> 
+
+    <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+  <DialogContent className="bg-white text-black">
+    <DialogHeader>
+      <DialogTitle className="text-md text-primary font-medium">Thank you for sharing your Recipe!!!</DialogTitle>
+      <DialogDescription>
+       Would you like to share another recipe or go back to your profile?
+      </DialogDescription>
+      <div className='flex justify-between mt-5'>
+        <button onClick={() => {
+           setDialogOpen(false);
+          router.push("/add-recipe")
+        }
+         } className='bg-primary text-white rounded-md px-10 py-[5.5px] mr-3 text-sm font-medium md:text-md cursor-pointer'>Add another Recipe</button>
+        <button onClick={() => {
+           setDialogOpen(false);
+          router.push("/profile")
+        }
+         } className='bg-primary text-white rounded-md px-10 py-[5.5px] text-sm font-medium md:text-md cursor-pointer'>Go to Profile</button>
+        </div>
+    </DialogHeader>
+  </DialogContent>
+</Dialog>
 </div>
 </div>
    
