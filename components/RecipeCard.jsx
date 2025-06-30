@@ -10,6 +10,7 @@ import {
   CardHeader,
 
 } from "@/components/ui/card"
+import { addToFavorites, removeFromFavorites, isRecipeFavorited} from '@/actions/favorites';
 import {
   Tooltip,
   TooltipContent,
@@ -20,6 +21,7 @@ import { getUserDetails } from '@/actions/profile';
 import { useCurrentUser } from '@/hooks/use-current-user';
 import Link from 'next/link';
 import { deleteRecipeById } from '@/actions/recipes';
+
 
 
 const RecipeCard = ({recipe:{id, title,image, ratings, nutrition}}) => {
@@ -52,7 +54,13 @@ const RecipeCard = ({recipe:{id, title,image, ratings, nutrition}}) => {
       })
       .catch((error) => {
         console.error("Error fetching user details:", error);
-  })}, []);
+  })
+
+  isRecipeFavorited(id, user.id)
+      .then((isFav) => setBookmarked(isFav))
+      .catch((error) => console.error("Error checking favorite status:", error));
+
+}, []);
         return (
           // <Card className="w-[300px] border-none pb-2 relative">
           <Link href={`/recipes/${id}`} className="block group" style={{ textDecoration: 'none' }}>
@@ -67,7 +75,18 @@ const RecipeCard = ({recipe:{id, title,image, ratings, nutrition}}) => {
           onClick={(e) => {
              e.preventDefault();
              e.stopPropagation();
-            setBookmarked((prev) => !prev)}
+            setBookmarked((prev) => !prev);
+            if (!bookmarked) {
+              addToFavorites(id, user.id)
+              .then((response) => {
+                console.log('Recipe added to favorites:', response);
+              })
+            } else {
+              removeFromFavorites(id, user.id)
+              .then((response) => {
+              console.log(response, 'Recipe removed from favorites')});
+            }
+          }
           }
            
           aria-label="Bookmark"
