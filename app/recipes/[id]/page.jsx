@@ -5,32 +5,9 @@ import { useParams } from 'next/navigation';
 import React, { useEffect, useState } from 'react'
 import StarRating from '@/components/RatingReview';
 import { useCurrentUser } from '@/hooks/use-current-user';
-import { FaRegHeart, FaRegCommentDots } from "react-icons/fa";
-import { addComment } from '@/actions/recipes';
+import { addComment, getRecipeComments } from '@/actions/recipes';
+import CommentThread from '@/components/CommentThread';
 
-const commentsData = [
-  {
-    id: 1,
-    user: { name: "User1", avatar: "/avatars/user1.jpg" },
-    time: "40min ago",
-    text: "This is a great recipe!",
-    likes: 26,
-  },
-  {
-    id: 2,
-    user: { name: "User2", avatar: "/avatars/user2.jpg" },
-    time: "20min ago",
-    text: "Looks delicious!",
-    likes: 10,
-  },
-  {
-    id: 3,
-    user: { name: "User3", avatar: "/avatars/user3.jpg" },
-    time: "1hr ago",
-    text: "Can't wait to try this.",
-    likes: 46,
-  },
-];
 
 
 
@@ -40,68 +17,93 @@ const page = () => {
   const params = useParams();
   const user = useCurrentUser();
  const [newComment, setNewComment] = useState("");
-const [comments, setComments] = useState(commentsData); // your existing comments array
-   const [replyingTo, setReplyingTo] = useState(null);
-  const [replyText, setReplyText] = useState("");
-
-
-
-  const [rating, setRating] = useState(0);
+const [comments, setComments] = useState([]); // your existing comments array
+  const [replyingTo, setReplyingTo] = useState({ commentId: null, replyId: null });
+const [replyText, setReplyText] = useState("");
+ const [rating, setRating] = useState(0);
+ const [commentsCount, setCommentsCount] = useState(0);
   
+const handleReplyClick = (commentId, replyId = null) => {
+  setReplyingTo({ commentId, replyId });
+  setReplyText("");
+};
+
   const handleRate = (star) => {
     setRating(star);
     updateRating(params.id, star, user?.id )
     // Save to DB here if needed
   };
 
-   const handleReplyClick = (id) => {
-    setReplyingTo(id);
-    setReplyText("");
-  };
-
-  const handleReplySubmit = (id) => {
-    if (!replyText.trim()) return;
-    setComments((prev) =>
-      prev.map((comment) =>
-        comment.id === id
-          ? {
-              ...comment,
-              replies: [
-                ...comment.replies,
-                {
-                  id: Date.now(),
-                  user: { name: "You", avatar: "/avatars/your-avatar.jpg" },
-                  time: "Just now",
-                  text: replyText,
-                },
-              ],
-            }
-          : comment
-      )
-    );
-    setReplyingTo(null);
-    setReplyText("");
-  };
-
-  const handleNewComment = (recipeId, text, userId, parentId) => {
-    if (!text.trim()) return;
-    addComment(recipeId, text, userId, parentId).then((newComment) => {
-      console.log(newComment);
-
+  const formattedDate = recipe?.createdAt
+  ? new Date(recipe.createdAt).toLocaleDateString("en-US", {
+      month: "short",
+      day: "2-digit",
+      year: "numeric",
     })
-  }
+  : "";
+
+  function timeAgo(date) {
+  const now = new Date();
+  const seconds = Math.floor((now - new Date(date)) / 1000);
+
+  if (seconds < 60) return `${seconds}s ago`;
+  const minutes = Math.floor(seconds / 60);
+  if (minutes < 60) return `${minutes}min ago`;
+  const hours = Math.floor(minutes / 60);
+  if (hours < 24) return `${hours}hr${hours > 1 ? "s" : ""} ago`;
+  const days = Math.floor(hours / 24);
+  return `${days}day${days > 1 ? "s" : ""} ago`;
+}
+
+ const showRating = recipe?.ratings?.length > 0 ? ratings.reduce((acc, curr) => acc + curr.value, 0) / ratings.length : 1;
+
+  const handleReplySubmit = async (commentId, replyId = null) => {
+  if (!replyText.trim()) return;
+  const parentId = replyId || commentId;
+
+   // Save reply to DB
+  const newReply = await addComment(
+    params.id,           // recipeId
+    replyText,           // text
+    user?.id,            // userId
+    parentId             // parentId (for replies)
+  );
+ 
+   // Optionally, fetch latest comments from DB
+  const updatedComments = await getRecipeComments(params.id);
+  setComments(updatedComments);
+  setReplyingTo({ commentId: null, replyId: null });
+  setReplyText("");
+};
+
+  const handleNewComment = async (recipeId, text, userId, parentId) => {
+  if (!text.trim()) return;
+  await addComment(recipeId, text, userId, parentId);
+  // Fetch latest comments after adding
+  const updatedComments = await getRecipeComments(recipeId);
+  setComments(updatedComments);
+  setNewComment("");
+};
 
   useEffect(() => {
     getRecipeByRecipeId(params.id)
       .then((data) => {
         console.log(data)
         setRecipe(data);
+        setComments(data?.comments || []);
       });
 
       getRecentRecipes(params.id)
       .then((data) => {
         console.log("recent recipe", data)
         setRecentRecipes(data)
+      })
+
+      getRecipeComments(params.id)
+      .then((data) => {
+        console.log("comments", data)
+        setComments(data);
+        setCommentsCount(data?.length || 0);
       })
 
       
@@ -119,11 +121,11 @@ const [comments, setComments] = useState(commentsData); // your existing comment
         <section className="flex-1">
           <h1 className="text-3xl font-bold mb-2">{recipe.title}</h1>
           <div className="flex flex-wrap items-center gap-4 text-gray-500 text-sm mb-4">
-            <span>👤 {recipe?.userId}</span>
-            <span>📅 Sep 26, 2023</span>
-            <span>💬 22 comments</span>
+            <span>👤 {recipe?.user?.name}</span>
+            <span>📅 {formattedDate}</span>
+            <span>💬 {commentsCount} comments</span>
             <span>🔖 9 Saves</span>
-            <span>⭐ 4.0 / 5 (10 Reviews)</span>
+            <span>⭐ {recipe?.ratings?.value}/ 5 rating</span>
             {/* <button className="ml-auto bg-primary text-white px-4 py-2 rounded shadow">Edit</button> */}
             <button className="ml-2">
               <svg className="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -160,7 +162,7 @@ const [comments, setComments] = useState(commentsData); // your existing comment
             </div>
             <div>
               <div className="font-semibold">Serving</div>
-              <div>{recipe?.servings} Serving</div>
+              <div>{recipe?.servings}  Serving</div>
             </div>
             <button className="ml-auto bg-white border border-primary text-primary px-4 py-2 rounded shadow">Print Recipe</button>
           </div>
@@ -171,7 +173,7 @@ const [comments, setComments] = useState(commentsData); // your existing comment
           <div className="mb-6">
             <div className="flex items-center mb-2">
               <h2 className="text-xl font-semibold mr-2">Ingredients:</h2>
-              <span className="text-gray-500">{recipe?.servings}serving</span>
+              <span className="text-gray-500">{recipe?.servings}{' '}serving</span>
               
             </div>
             <ul className="space-y-2">
@@ -192,122 +194,67 @@ const [comments, setComments] = useState(commentsData); // your existing comment
             </ol>
           </div>
 
-          {/* Comments Section */}
-         {/* <div className="bg-white min-h-screen px-2 py-4 sm:px-4 sm:py-6">
-      <div className="max-w-2xl mx-auto">
-        {comments.map((comment) => (
-          <div key={comment.id} className="border-b border-gray-200 pb-8 mb-8">
-            <div className="flex items-center gap-3">
-              <img
-                src={comment.user.avatar}
-                alt={comment.user.name}
-                className="w-12 h-12 rounded-full object-cover"
-              />
-              <span className="text-gray-500 text-sm">{comment.time}</span>
-            </div>
-            <div className="mt-4 min-h-[40px] text-gray-900 text-base break-words">
-              {comment.text}
-            </div>
-            <div className="flex items-center gap-8 mt-4 text-[#B55D51]">
-              <button
-                className="flex items-center gap-2 hover:underline"
-                onClick={() => handleReplyClick(comment.id)}
-              >
-                <FaRegCommentDots className="text-lg" />
-                <span>Reply</span>
-              </button>
-              <div className="flex items-center gap-2">
-                <FaRegHeart className="text-lg" />
-                <span>{comment.likes}</span>
-              </div>
-            </div>
-            {/* Reply input */}
-            {/* {replyingTo === comment.id && (
-              <div className="mt-4 flex items-center gap-2">
-                <input
-                  type="text"
-                  className="flex-1 border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#B55D51]"
-                  placeholder="Write a reply..."
-                  value={replyText}
-                  onChange={(e) => setReplyText(e.target.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter") handleReplySubmit(comment.id);
-                  }}
-                  autoFocus
-                />
-                <button
-                  className="bg-[#B55D51] text-white px-4 py-2 rounded hover:bg-[#a04d43] transition"
-                  onClick={() => handleReplySubmit(comment.id)}
-                >
-                  Reply
-                </button>
-              </div>
-            )} */}
-            {/* Show replies */}
-            {/* {10 > 0 && (
-              <div className="mt-4 pl-8 space-y-2">
-                {comment.replies.map((reply) => (
-                  <div key={reply.id} className="flex items-start gap-2">
-                    <img
-                      src={reply.user.avatar}
-                      alt={reply.user.name}
-                      className="w-8 h-8 rounded-full object-cover"
-                    />
-                    <div>
-                      <div className="text-gray-800 text-sm">{reply.text}</div>
-                      <div className="text-gray-400 text-xs">{reply.time}</div>
-                    </div>
+          
+      {/* Comments Section */}
+<div className="bg-white min-h-screen px-2 py-4 sm:px-4 sm:py-6">
+  <h2 className="text-xl font-medium mb-6">Comment</h2>
+  <div className="max-w-2xl mx-auto">
+    {comments.map((comment) => (
+      <CommentThread
+        key={comment.id}
+        comment={comment}
+        handleReplyClick={handleReplyClick}
+        replyingTo={replyingTo}
+        replyText={replyText}
+        setReplyText={setReplyText}
+        handleReplySubmit={handleReplySubmit}
+        timeAgo={timeAgo}
+      />
+    ))}
+    <button className="w-full border border-[#B55D51] text-[#B55D51] py-2 rounded-md mt-4 hover:bg-[#B55D51] hover:text-white transition mb-5">
+      Load more comments
+    </button>
+  </div>
+  {/* Rate and Comment */}
+  <div className="mb-8">
+    <div className="border-t border-primary mb-4"></div>
+    <h3 className="font-semibold mb-2">Rate this recipe and share your opinion</h3>
+    <div className="flex items-center mb-2">
+      {/* Star rating placeholder */}
+      <StarRating value={rating} onChange={handleRate} />
+    </div>
+    <div className="flex gap-2 mt-4">
+      <input
+        type="text"
+        className="flex-1 border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#B55D51]"
+        placeholder="Write a comment..."
+        value={newComment}
+        onChange={(e) => setNewComment(e.target.value)}
+      />
+     <button
+  className="bg-[#B55D51] text-white px-4 py-2 rounded hover:bg-[#a04d43] transition"
+  onClick={() => handleNewComment(params.id, newComment, user?.id, null)}
+>
+  Post
+</button>
+    </div>
+  </div>
+</div>
+            {/* You might like this */}
+            <div className="mb-8">
+              <h3 className="text-xl font-semibold mb-4">You might like this</h3>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                {/* Example cards */}
+                {[1,2,3,4,5,6,7,8].map(i => (
+                  <div key={i} className="bg-white rounded shadow p-2">
+                    <img src={`/images/related${i}.jpg`} alt="" className="rounded mb-2" />
+                    <div className="font-medium text-sm">Recipe Title</div>
+                    <div className="text-xs text-gray-500">★★★★★</div>
                   </div>
                 ))}
               </div>
-            )}
-          </div>
-        ))}
-        <button className="w-full border border-[#B55D51] text-[#B55D51] py-2 rounded-md mt-4 hover:bg-[#B55D51] hover:text-white transition">
-          Load more comments
-        </button>
-      </div>
-    </div>  */}
-          {/* Rate and Comment */}
-          <div className="mb-8">
-            <div className="border-t border-primary mb-4"></div>
-            <h3 className="font-semibold mb-2">Rate this recipe and share your opinion</h3>
-            <div className="flex items-center mb-2">
-              {/* Star rating placeholder */}
-           <StarRating value={rating} onChange={handleRate} />
             </div>
-            <div className="flex gap-2 mt-4">
-          <input
-            type="text"
-            className="flex-1 border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#B55D51]"
-            placeholder="Write a comment..."
-            value={newComment}
-            onChange={(e) => setNewComment(e.target.value)}
-          />
-          <button
-            className="bg-[#B55D51] text-white px-4 py-2 rounded hover:bg-[#a04d43] transition"
-            onClick={() => {handleNewComment(params.id, newComment, user?.id); setNewComment("")}
-            }
-          >
-            Post
-          </button>
-        </div>
-          </div>
-          {/* You might like this */}
-          <div className="mb-8">
-            <h3 className="text-xl font-semibold mb-4">You might like this</h3>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              {/* Example cards */}
-              {[1,2,3,4,5,6,7,8].map(i => (
-                <div key={i} className="bg-white rounded shadow p-2">
-                  <img src={`/images/related${i}.jpg`} alt="" className="rounded mb-2" />
-                  <div className="font-medium text-sm">Recipe Title</div>
-                  <div className="text-xs text-gray-500">★★★★★</div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
+          </section>
         {/* Right Sidebar */}
         <aside className="w-full lg:w-80 flex flex-col gap-6">
           {/* Related Product */}

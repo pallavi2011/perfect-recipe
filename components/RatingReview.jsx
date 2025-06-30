@@ -17,7 +17,9 @@ const StarRating = ({ value = 0, onChange, max = 5, size = 32, color = "#B55D51"
               color: starValue <= (hovered || value) ? color : "#e5e7eb",
               transition: "color 0.2s",
             }}
-            onClick={() => onChange && onChange(starValue)}
+            onClick={(e) => 
+              { e.stopPropagation();
+                onChange && onChange(starValue)}}
             onMouseEnter={() => setHovered(starValue)}
             onMouseLeave={() => setHovered(0)}
             role="button"

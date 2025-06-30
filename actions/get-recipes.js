@@ -9,7 +9,8 @@ export const getAllRecipes = async () => {
         ingredients: true,
         instructions: true,
         nutrition: true,
-        ratings:true
+        ratings:true,
+        comments: true
       },
     });
     return recipes;
@@ -27,7 +28,8 @@ export const getRecipesById = async (Id) => {
             ingredients: true,
             instructions: true,
             nutrition: true,
-            ratings:true
+            ratings:true,
+             comments: true
         },
     });
     return recipes;
@@ -45,7 +47,11 @@ export const getRecipeByRecipeId = async (recipeId) => {
         ingredients: true,
         instructions: true,
         nutrition: true,
-        ratings:true
+        ratings:true,
+         comments: true,
+         user:{
+           select: { name: true, image: true } ,
+         }
       },
     });
     return recipe;
@@ -64,7 +70,7 @@ export const getRecentRecipes = async(currentRecipeId) => {
         ingredients: true,
         instructions: true,
         nutrition: true,
-        ratings:true
+        ratings:true,
       },
   })
 

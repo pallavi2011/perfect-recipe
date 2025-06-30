@@ -30,6 +30,7 @@ model User{
   recipes       Recipe[]
   ratings       Rating[]
   comments      Comment[]
+  likes         Like[]
   
  
   createdAt DateTime @default(now())
@@ -86,6 +87,7 @@ model Recipe {
   nutrition          Nutrition?    // Relation
   ratings            Rating[]      // Relation
   comments    Comment[]
+  likes              Like[]        // Relation
 
   createdAt          DateTime      @default(now())
   updatedAt          DateTime      @updatedAt
@@ -142,8 +144,23 @@ model Comment {
   
   parentId  String?  // For nested replies (optional)
   parent    Comment? @relation("CommentReplies", fields: [parentId], references: [id],onDelete: Cascade)
+
   replies   Comment[] @relation("CommentReplies")
+  likes     Like[]    // Relation to likes on comments
+
 }
+
+model Like {
+  id        String   @id @default(uuid())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String
+  recipe    Recipe?  @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+  recipeId  String?
+  comment   Comment? @relation(fields: [commentId], references: [id], onDelete: Cascade)
+  commentId String?
+  createdAt DateTime @default(now())
+}
+
 
 model PasswordResetToken {
   id String @id @default(cuid())

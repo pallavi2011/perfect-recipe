@@ -32,3 +32,36 @@ export const addComment = async (recipeId,  text,userId, parentId) => {
     });
   return comment;
 }
+
+async function getRepliesRecursive(parentId) {
+  const replies = await db.comment.findMany({
+    where: { parentId },
+    include: {
+      user: { select: { name: true, image: true } },
+    },
+    orderBy: { createdAt: 'asc' },
+  });
+
+  // For each reply, fetch its own replies recursively
+  for (let reply of replies) {
+    reply.replies = await getRepliesRecursive(reply.id);
+  }
+  return replies;
+}
+
+export const getRecipeComments = async (recipeId) => {
+  const comments = await db.comment.findMany({
+    where: { recipeId, parentId: null },
+    include: {
+      user: { select: { name: true, image: true } },
+    },
+    orderBy: { createdAt: 'desc' },
+  });
+
+  // Attach nested replies recursively
+  for (let comment of comments) {
+    comment.replies = await getRepliesRecursive(comment.id);
+  }
+
+  return comments;
+};
