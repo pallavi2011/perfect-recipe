@@ -1,4 +1,12 @@
+"use client";
+
+import React from 'react';
+import { useRouter } from 'next/navigation';
+import { useCurrentUser } from '@/hooks/use-current-user';
+
 const Hero = () => {
+  const router = useRouter();
+  const user = useCurrentUser();
     return (
       <section id="home" className='w-full flex flex-col min-h-screen px-8 md:px-10 lg:px-14'>
         <div className='absolute top-0 right-0'>
@@ -15,8 +23,15 @@ const Hero = () => {
              <span className='font-bold font-roboto text-black text-3xl md:text-4xl lg:text-5xl  whitespace-nowrap md:whitespace-nowrap'>A <span className="text-primary">Food</span> Journey</span>
              </h1>
              <p className='text-gray-2 text-sm md:text-base lg:text-lg font-normal w-full '>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas vitae enim pharetra, venenatis nunc eget, finibus est. Proin velit </p>
-             <button className='flex w-3/4 md:w-2/5 bg-primary text-white rounded-lg px-3 py-1.5 justify-center font-medium'>Sign Up</button>
+             {!user ? (
+              <>
+                <button className='flex w-3/4 md:w-2/5 bg-primary text-white rounded-lg px-3 py-1.5 justify-center font-medium cursor-pointer' onClick={() => router.push('/sign-up')}>Sign Up</button>
              <span className='text-gray-2 text-sm font-medium hidden sm:block'>Do you have account? <a href='/sign-in' className='text-primary'>Log in </a></span>
+             </>
+             ):(
+              <></>
+             )}
+             
           </div>
   
           <div className='md:flex md:justify-around md:absolute md:-right-20 lg:right-9 max-md:hidden'>

@@ -86,7 +86,7 @@ useEffect(() => {
               <h4 className='text-black text-wrap text-xl md:text-2xl font-medium text-center md:text-left'>
                Welcome Back!
               </h4>
-              <span className="mt-2 mb-5 text-xs text-gray-2">Enter your email & password to log in</span>
+              <span className="mt-2 mb-5 text-xs text-gray-2 max-md:text-center">Enter your email & password to log in</span>
             <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className='flex flex-col gap-y-3 border-[0.5px] border-gray-3 rounded-md mt-3 w-full p-5'>
             

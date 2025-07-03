@@ -55,7 +55,7 @@ const handleReplyClick = (commentId, replyId = null) => {
   return `${days}day${days > 1 ? "s" : ""} ago`;
 }
 
- const showRating = recipe?.ratings?.length > 0 ? ratings.reduce((acc, curr) => acc + curr.value, 0) / ratings.length : 1;
+ const showRating = recipe?.ratings?.length > 0 ? recipe?.ratings?.reduce((acc, curr) => acc + curr.value, 0) / recipe?.ratings?.length : 1;
 
   const handleReplySubmit = async (commentId, replyId = null) => {
   if (!replyText.trim()) return;
@@ -125,7 +125,7 @@ const handleReplyClick = (commentId, replyId = null) => {
             <span>📅 {formattedDate}</span>
             <span>💬 {commentsCount} comments</span>
             <span>🔖 9 Saves</span>
-            <span>⭐ {recipe?.ratings?.value}/ 5 rating</span>
+            <span>{showRating} ⭐ / 5 rating</span>
             {/* <button className="ml-auto bg-primary text-white px-4 py-2 rounded shadow">Edit</button> */}
             <button className="ml-2">
               <svg className="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">

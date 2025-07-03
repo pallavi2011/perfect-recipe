@@ -73,7 +73,9 @@ const Page = () => {
     <div className="px-10 md:px-16 lg:px-20 mt-15">
       <div className="flex justify-between items-center mb-5">
         <div className="flex">
-           <span className="text-gray-3 text-sm">{formattedPath}</span><span className="text-black text-sm font-medium">{'>'}Recipes</span>
+           {/* <span className="text-gray-3 text-sm">{formattedPath}</span>
+           <span className="text-black text-sm font-medium">{'>'}Recipes</span> */}
+            <span className="text-black text-lg font-medium">Recipes</span> 
         </div>
         <Input className="w-[30%] border-2 border-primary text-black focus:outline-none focus-visible:ring-0 focus:ring-0" placeholder="Search recipes..."
         value={search}

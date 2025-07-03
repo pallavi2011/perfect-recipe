@@ -120,7 +120,7 @@ const handleProfilePicSubmit = async (data) => {
     },[user]);
   return (
     <div className="px-10 md:px-16 lg:px-25 mt-15">
-       <span className="text-gray-3 text-sm">{formattedPath}</span><span className="text-black text-sm font-medium">{'>'}Profile</span>
+       {/* <span className="text-gray-3 text-sm">{formattedPath}</span><span className="text-black text-sm font-medium">{'>'}Profile</span> */}
 
     
        <div className='mt-5 mx-auto'>
@@ -303,7 +303,7 @@ const handleProfilePicSubmit = async (data) => {
 
         <div className='flex justify-between'>
             <span className='text-gray-2 text-xs'>Recipes added to favorites</span>
-            <Link href="/favrecipes" className='text-primary text-xs'>Show & Manage</Link>
+            <Link href="/myfavorites" className='text-primary text-xs'>Show & Manage</Link>
         </div>
         
     </div>

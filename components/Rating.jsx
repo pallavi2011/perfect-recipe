@@ -7,7 +7,7 @@ const Rating = ({rating}) => {
         const starValue = i + 1;
         return (
           <span
-            key={starValue}
+            key={starValue == 0 ? "1": starValue}
             style={{
               cursor: "pointer",
               fontSize: 32,

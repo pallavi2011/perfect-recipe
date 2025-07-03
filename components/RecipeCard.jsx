@@ -24,15 +24,17 @@ import { deleteRecipeById } from '@/actions/recipes';
 
 
 
-const RecipeCard = ({recipe:{id, title,image, ratings, nutrition}}) => {
-  const user = useCurrentUser();
-
-  const [currentUser, setCurrentUser] = useState(user);
-  const [bookmarked, setBookmarked] = useState(false);
-  const rating = ratings.length > 0 ? ratings.reduce((acc, curr) => acc + curr.value, 0) / ratings.length : 0;
-
-
+const RecipeCard = ({recipe}) => {
+  const { id, userId, title, image, ratings, nutrition, user } = recipe;
+  if (!recipe) return null;
+  const currentUser = useCurrentUser();
  
+  const [bookmarked, setBookmarked] = useState(false);
+  
+  const rating = ratings?.length > 0 ? ratings.reduce((acc, curr) => acc + curr.value, 0) / ratings.length : 0;
+
+
+  console.log(user)
 
   const deleteRecipe = (id) => {
     deleteRecipeById(id)
@@ -48,15 +50,9 @@ const RecipeCard = ({recipe:{id, title,image, ratings, nutrition}}) => {
       });
   }
   useEffect(() => {
-    getUserDetails(user.id)
-      .then((data) => {
-        setCurrentUser(data);
-      })
-      .catch((error) => {
-        console.error("Error fetching user details:", error);
-  })
-
-  isRecipeFavorited(id, user.id)
+   
+  if (!id || !currentUser?.id) return;
+  isRecipeFavorited(id,  currentUser.id)
       .then((isFav) => setBookmarked(isFav))
       .catch((error) => console.error("Error checking favorite status:", error));
 
@@ -77,12 +73,12 @@ const RecipeCard = ({recipe:{id, title,image, ratings, nutrition}}) => {
              e.stopPropagation();
             setBookmarked((prev) => !prev);
             if (!bookmarked) {
-              addToFavorites(id, user.id)
+              addToFavorites(id, currentUser.id)
               .then((response) => {
                 console.log('Recipe added to favorites:', response);
               })
             } else {
-              removeFromFavorites(id, user.id)
+              removeFromFavorites(id, currentUser.id)
               .then((response) => {
               console.log(response, 'Recipe removed from favorites')});
             }
@@ -109,7 +105,7 @@ const RecipeCard = ({recipe:{id, title,image, ratings, nutrition}}) => {
               
             </CardContent>
             <CardFooter className="flex items-end justify-between min-h-[30px]">
-              {user.id === currentUser.id ? (
+              {user && currentUser.id === userId? (
                 <>
                <Link className='text-xs md:text-sm font-normal  text-primary cursor-pointer' href={`recipes/edit/${id}`}>Edit</Link>
                <button className='text-xs md:text-sm font-normal text-primary cursor-pointer' onClick={(e) => {
@@ -120,8 +116,8 @@ const RecipeCard = ({recipe:{id, title,image, ratings, nutrition}}) => {
               ):(
                 <>
                  <div className='flex gap-x-3'>
-                  <img src={pic} className='w-7 h-7'/>
-                  <span className='text-xs md:text-sm font-normal text-nowrap'>{user}</span>
+                  <img src={user.image} className='w-7 h-7 rounded-full object-cover'/>
+                  <span className='text-xs md:text-sm font-normal text-nowrap'>{user.name}</span>
                 </div>
             <div className='px-2 py-0.5 flex items-center gap-x-1 border-solid border-[0.5px] border-gray-2 rounded-lg'>
                   <img src={"/icons/fire.png"} className='w-4 h-4'/>

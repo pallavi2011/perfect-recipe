@@ -41,6 +41,9 @@ const Page = () => {
       const user = useCurrentUser()
       const router = useRouter();
       const [dialogOpen, setDialogOpen] = useState(false);
+       const [isPending, startTransition] = useTransition();
+      const [error, setError] = useState("");
+      const [success, setSuccess] = useState("");
      
       const getInitialFormValues = () => {
     if (typeof window !== "undefined") {
@@ -64,9 +67,19 @@ const Page = () => {
 const [instructions, setInstructions] = useState(
   Array.isArray(initial.instructions) ? initial.instructions.map(i => i ?? "") : [""]
 );
-    const [isPending, startTransition] = useTransition();
-      const [error, setError] = useState("");
-      const [success, setSuccess] = useState("");
+   
+
+      const removeIngredient = (index) => {
+        if (ingredients.length === 1) return; // Prevent removing the last field
+        const updated = ingredients.filter((_, idx) => idx !== index);
+        setIngredients(updated);
+      };
+      
+      const removeInstruction = (index) => {
+        if (instructions.length === 1) return; // Prevent removing the last field
+        const updated = instructions.filter((_, idx) => idx !== index);
+        setInstructions(updated);
+      };
 
   const handleIngredientChange = (index, value) => {
     const updated = [...ingredients];
@@ -252,7 +265,7 @@ useEffect(() => {
                               <div className='flex flex-col gap-y-4'>
                             <label className='text-lg'>Description:</label>
                             <Input type="text" 
-                            {...field} className='w-full h-10  border-gray-3 rounded-md border-[0.5px] text-gray-3 text-sm focus:outline-none focus:border-[1.5px] focus:border-primary focus-visible:ring-0' placeholder=' Introduce your recipe' maxLength={100}/>
+                            {...field} className='w-full h-10  border-gray-3 rounded-md border-[0.5px] text-gray-3 text-sm focus:outline-none focus:border-[1.5px] focus:border-primary focus-visible:ring-0' placeholder=' Introduce your recipe' maxLength={200}/>
                         </div>
 
 
@@ -273,15 +286,26 @@ useEffect(() => {
                                <div className='flex flex-col gap-y-4'>
             <label className='text-lg'>Ingredients:</label>
             {ingredients.map((ingredient, idx) => (
-        <Input
-          key={idx}
-          type="text"
-          className='mb-2 w-full h-10  border-gray-3 rounded-md border-[0.5px] text-gray-3 text-sm focus:outline-none focus:border-[1.5px] focus:border-primary focus:ring-0 focus-visible:ring-0'
-          placeholder={`Ingredient ${idx + 1}`}
-          value={ingredient ?? ""}
-          onChange={e => handleIngredientChange(idx, e.target.value)}
-        />
-      ))}
+  <div key={idx} className="flex items-center mb-2">
+    <Input
+      type="text"
+      className='w-full h-10 border-gray-3 rounded-md border-[0.5px] text-gray-3 text-sm focus:outline-none focus:border-[1.5px] focus:border-primary focus:ring-0 focus-visible:ring-0'
+      placeholder={`Ingredient ${idx + 1}`}
+      value={ingredient ?? ""}
+      onChange={e => handleIngredientChange(idx, e.target.value)}
+    />
+    {ingredients.length > 1 && (
+      <button
+        type="button"
+        className="ml-2 text-red-500 text-lg"
+        onClick={() => removeIngredient(idx)}
+        title="Remove"
+      >
+        &times;
+      </button>
+    )}
+  </div>
+))}
 
        <button
         type="button"
@@ -313,15 +337,26 @@ useEffect(() => {
                                <div className='flex flex-col gap-y-4'>
             <label className='text-lg'>Instructions:</label>
             {instructions.map((instruction, idx) => (
-        <Input
-          key={idx}
-          type="text"
-          className='mb-2 w-full h-10  border-gray-3 rounded-md border-[0.5px] text-gray-3 text-sm focus:outline-none focus:border-[1.5px] focus:border-primary focus:ring-0 focus-visible:ring-0'
-          placeholder={`Instruction ${idx + 1}`}
-          value={instruction ?? ""}
-          onChange={e => handleInstructionChange(idx, e.target.value)}
-        />
-      ))}
+  <div key={idx} className="flex items-center mb-2">
+    <Input
+      type="text"
+      className='w-full h-10 border-gray-3 rounded-md border-[0.5px] text-gray-3 text-sm focus:outline-none focus:border-[1.5px] focus:border-primary focus:ring-0 focus-visible:ring-0'
+      placeholder={`Instruction ${idx + 1}`}
+      value={instruction ?? ""}
+      onChange={e => handleInstructionChange(idx, e.target.value)}
+    />
+    {instructions.length > 1 && (
+      <button
+        type="button"
+        className="ml-2 text-red-500 text-lg"
+        onClick={() => removeInstruction(idx)}
+        title="Remove"
+      >
+        &times;
+      </button>
+    )}
+  </div>
+))}
 
        <button
         type="button"

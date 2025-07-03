@@ -5,12 +5,16 @@ import { db } from "@/lib/prisma";
 export const getAllRecipes = async () => {
   try {
     const recipes = await db.recipe.findMany({
+      orderBy: { createdAt: 'desc' },
       include: {
         ingredients: true,
         instructions: true,
         nutrition: true,
         ratings:true,
-        comments: true
+        comments: true,
+        user:{
+           select: { name: true, image: true } ,
+         }
       },
     });
     return recipes;
@@ -20,16 +24,20 @@ export const getAllRecipes = async () => {
   }
 };
 
-export const getRecipesById = async (Id) => {
+export const getRecipesByUserId = async (Id) => {
   try {
     const recipes = await db.recipe.findMany({
         where: { userId: Id },
+        orderBy: { createdAt: 'desc' },
         include: {
             ingredients: true,
             instructions: true,
             nutrition: true,
             ratings:true,
-             comments: true
+             comments: true,
+              user:{
+           select: { name: true, image: true } ,
+         }
         },
     });
     return recipes;

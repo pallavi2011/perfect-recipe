@@ -49,7 +49,7 @@ const header = () => {
             P
           </div>
         </DropdownMenuTrigger>
-        <DropdownMenuContent>
+        <DropdownMenuContent className="bg-white">
          
           <DropdownMenuItem onClick={() => router.push('/profile')}>Profile</DropdownMenuItem>
            <DropdownMenuItem onClick={onClick} className="cursor-pointer">Sign Out</DropdownMenuItem>

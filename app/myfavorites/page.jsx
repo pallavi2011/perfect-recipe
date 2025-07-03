@@ -5,14 +5,15 @@ import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useCurrentUser } from "@/hooks/use-current-user";
 import { usePreviousPath } from "@/context/PreviousPathContext";
-import { getRecipesByUserId } from "@/actions/get-recipes";
+import { getFavoritesByUserId } from "@/actions/favorites";
+
 
 const Page = () => {
     const prevPath = usePreviousPath();
 
   const user = useCurrentUser()
   const router = useRouter();
-  const [myrecipes, setMyRecipes] = useState([]);
+  const [myFavorites, setMyFavorites] = useState([]);
 
  
 
@@ -21,9 +22,9 @@ const Page = () => {
       router.push("/sign-in");
     }
 
-     getRecipesByUserId(user.id)
+     getFavoritesByUserId(user.id)
     .then((data) => {
-      setMyRecipes(data);
+      setMyFavorites(data);
       console.log(data)
     })
     
@@ -37,12 +38,12 @@ const Page = () => {
 
   return (
     <div className="px-10 md:px-16 lg:px-20 mt-15">
-       {/* <span className="text-gray-3 text-sm">{formattedPath}</span><span className="text-black text-sm font-medium">{'>'}Recipes</span> */}
-       <span className="text-black text-lg font-medium">My Recipes</span>
+       {/* <span className="text-gray-3 text-sm">{formattedPath}</span><span className="text-black text-sm font-medium">{'>'}My Favorite Recipes</span> */}
+       <span className="text-black text-lg font-medium">My Favorite Recipes</span> 
         <div className="grid grid-cols-2 md:grid-cols-3 gap-2 md:gap-4 mt-10">
             {
-                myrecipes.map((recipe, index) => (
-                    <RecipeCard key={index} recipe={recipe} />
+                myFavorites.map((recipe, index) => (
+                    <RecipeCard key={index} recipe={recipe?.recipe} />
                 ))
             }
             

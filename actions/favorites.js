@@ -42,3 +42,32 @@ export async function isRecipeFavorited(recipeId, userId) {
   });
   return !!favorite;
 }
+
+export async function getFavoritesByUserId(userId) {
+  try {
+    const favorites = await db.favorite.findMany({
+      where: { userId },
+      orderBy: { createdAt: 'desc' },
+      include: {
+        recipe: {
+          include:{
+            user: {
+              select: {
+                image: true,
+                name: true,
+              },
+            },
+           
+            ratings: true,
+            comments: true,
+          }
+        }
+        
+      },
+    });
+    return favorites;
+  } catch (error) {
+    console.error('Error fetching favorites:', error);
+    throw error;
+  }
+}
