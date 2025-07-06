@@ -40,7 +40,7 @@ const header = () => {
       ))} 
     </ul>
     <DropdownMenu>
-  <DropdownMenuTrigger className="focus-visible:ring-0">
+  <DropdownMenuTrigger className="focus-visible:ring-0 focus:outline-none focus:ring-0">
     <div className='hidden max-lg:block'>
       <img src={"/icons/hamburger.png"} alt="hamburger" width={32} height={24}/>
     </div>
