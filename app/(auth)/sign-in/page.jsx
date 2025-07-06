@@ -62,7 +62,7 @@ const page = () => {
     ...values,
     redirect: false, // Prevent automatic redirect
   }).then((res) => {
-    setIsPending(false);
+    
     if (res?.ok) {
       router.push("/");
     } else {

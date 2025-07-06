@@ -22,7 +22,7 @@ const header = () => {
           });
         }
   return (
-    <header className='px-8 md:px-10 lg:px-14 py-4 top-0 sticky bg-white w-full z-10'>
+    <header className='px-8 md:px-10 lg:px-14 py-4 top-0 sticky bg-white w-full z-12'>
   <nav className='flex relative justify-between items-center max-container'>
     <a href="/">
       <div className='flex items-center'>
@@ -39,9 +39,22 @@ const header = () => {
         </li>
       ))} 
     </ul>
+    <DropdownMenu>
+  <DropdownMenuTrigger className="focus-visible:ring-0">
     <div className='hidden max-lg:block'>
       <img src={"/icons/hamburger.png"} alt="hamburger" width={32} height={24}/>
     </div>
+  </DropdownMenuTrigger>
+  <DropdownMenuContent className="bg-white">
+   
+    <DropdownMenuItem asChild><Link href="/">Home</Link></DropdownMenuItem>
+    <DropdownMenuItem asChild><Link href="/recipes">Recipes</Link></DropdownMenuItem>
+    <DropdownMenuItem asChild><Link href="/add-recipe">Add Recipe</Link></DropdownMenuItem>
+     <DropdownMenuItem asChild><Link href="/blog">Blog</Link></DropdownMenuItem>
+    <DropdownMenuItem asChild><Link href="/about">About Us</Link></DropdownMenuItem>
+  </DropdownMenuContent>
+</DropdownMenu>
+    
     {user ? (
       <DropdownMenu>
         <DropdownMenuTrigger asChild>

@@ -34,7 +34,7 @@ const RecipeCard = ({recipe}) => {
   const rating = ratings?.length > 0 ? ratings.reduce((acc, curr) => acc + curr.value, 0) / ratings.length : 0;
 
 
-  console.log(user)
+  
 
   const deleteRecipe = (id) => {
     deleteRecipeById(id)
@@ -105,9 +105,13 @@ const RecipeCard = ({recipe}) => {
               
             </CardContent>
             <CardFooter className="flex items-end justify-between min-h-[30px]">
-              {user && currentUser.id === userId? (
+              {user && currentUser?.id === userId? (
                 <>
-               <Link className='text-xs md:text-sm font-normal  text-primary cursor-pointer' href={`recipes/edit/${id}`}>Edit</Link>
+               <button className='text-xs md:text-sm font-normal  text-primary cursor-pointer'  onClick={e => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  router.push(`/recipes/edit/${id}`);
+                }}>Edit</button>
                <button className='text-xs md:text-sm font-normal text-primary cursor-pointer' onClick={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
@@ -116,8 +120,8 @@ const RecipeCard = ({recipe}) => {
               ):(
                 <>
                  <div className='flex gap-x-3'>
-                  <img src={user.image} className='w-7 h-7 rounded-full object-cover'/>
-                  <span className='text-xs md:text-sm font-normal text-nowrap'>{user.name}</span>
+                  <img src={user?.image} className='w-7 h-7 rounded-full object-cover'/>
+                  <span className='text-xs md:text-sm font-normal text-nowrap'>{user?.name}</span>
                 </div>
             <div className='px-2 py-0.5 flex items-center gap-x-1 border-solid border-[0.5px] border-gray-2 rounded-lg'>
                   <img src={"/icons/fire.png"} className='w-4 h-4'/>
