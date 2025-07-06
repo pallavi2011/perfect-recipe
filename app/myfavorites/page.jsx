@@ -7,7 +7,7 @@ import { useCurrentUser } from "@/hooks/use-current-user";
 import { usePreviousPath } from "@/context/PreviousPathContext";
 import { getFavoritesByUserId } from "@/actions/favorites";
 
-const RECIPES_PER_PAGE = 1;
+const RECIPES_PER_PAGE = 8;
 
 const Page = () => {
     const prevPath = usePreviousPath();
