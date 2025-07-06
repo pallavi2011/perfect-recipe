@@ -21,11 +21,13 @@ import { getUserDetails } from '@/actions/profile';
 import { useCurrentUser } from '@/hooks/use-current-user';
 import Link from 'next/link';
 import { deleteRecipeById } from '@/actions/recipes';
+import { useRouter } from 'next/navigation';
 
 
 
 const RecipeCard = ({recipe}) => {
   const { id, userId, title, image, ratings, nutrition, user } = recipe;
+  const router = useRouter();
   if (!recipe) return null;
   const currentUser = useCurrentUser();
  

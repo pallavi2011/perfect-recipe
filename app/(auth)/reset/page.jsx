@@ -55,7 +55,7 @@ const page = () => {
     <section className='shadow-md border-[0.3px] border-gray-5 justify-center place-items-center mt-32 md:mx-20 bg-white'>
      <div className='grid grid-cols-1 md:grid-cols-2 w-full bg-white overflow-hidden'>
      <img src={"/images/signup.png"} className='md:w-full lg:w-[30rem] md:min-h-screen hidden md:block'/>
-     <div className='flex flex-col px-5 w-full'>
+     <div className='flex flex-col px-0 w-full'>
               <h4 className='text-black text-wrap text-xl md:text-2xl font-medium text-center md:text-left'>
                Forgot Password!
               </h4>
