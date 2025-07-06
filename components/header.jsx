@@ -58,8 +58,8 @@ const header = () => {
     {user ? (
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <div className='bg-blue-100 rounded-full text-center size-6 border-[1.5px] border-black lg:block hidden'>
-            P
+          <div className='bg-blue-100 rounded-full text-center size-10 border-[1.5px] border-white lg:block hidden'>
+            <img src={user.image} className='w-full h-full rounded-full object-cover' alt="User Profile" />
           </div>
         </DropdownMenuTrigger>
         <DropdownMenuContent className="bg-white">
