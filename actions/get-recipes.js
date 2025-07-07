@@ -6,10 +6,7 @@ import redis from "@/lib/redis";
 export const getAllRecipes = async () => {
   
   try {
-     const cached = await redis.get(cacheKey);
-    if (cached) {
-      return JSON.parse(cached);
-    }
+    
     const recipes = await db.recipe.findMany({
       orderBy: { createdAt: 'desc' },
       include: {
