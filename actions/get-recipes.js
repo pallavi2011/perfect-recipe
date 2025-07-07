@@ -4,7 +4,7 @@ import { db } from "@/lib/prisma";
 import redis from "@/lib/redis";
 
 export const getAllRecipes = async () => {
-  const cacheKey = "all_recipes";
+  
   try {
      const cached = await redis.get(cacheKey);
     if (cached) {
@@ -23,7 +23,7 @@ export const getAllRecipes = async () => {
          }
       },
     });
-    await redis.set(cacheKey, JSON.stringify(recipes), "EX", 600); // Cache for 10 minutes
+   
     return recipes;
   } catch (error) {
     console.error('Error fetching recipes:', error);
