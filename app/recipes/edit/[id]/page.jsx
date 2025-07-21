@@ -51,6 +51,35 @@ const Page = () => {
 const [instructions, setInstructions] = useState([""]);
 const [loading, setLoading] = useState(false);
 const [recipeData, setRecipeData] = useState([]);
+const [isCalculating, setIsCalculating] = useState(false);
+
+const handleCalculateNutrition = async () => {
+  setIsCalculating(true);
+  try {
+    const response = await fetch("/api/calculate-nutrition-ai", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ ingredients }),
+    });
+    const data = await response.json();
+    console.log(data.calories);
+    if (data) {
+      if (data) {
+      form.setValue("calories", data.calories ?? "", { shouldValidate: true });
+      form.setValue("protein", data.protein ?? "", { shouldValidate: true });
+      form.setValue("fats", data.fats ?? "", { shouldValidate: true });
+      form.setValue("carbohydrates", data.carbohydrates ?? "", { shouldValidate: true });
+      form.setValue("fiber", data.fiber ?? "", { shouldValidate: true });
+      form.setValue("netCarbs", data.netCarbs ?? "", { shouldValidate: true });
+      form.setValue("sodium", data.sodium ?? "", { shouldValidate: true });
+      form.setValue("cholesterol", data.cholesterol ?? "", { shouldValidate: true });
+    }
+    }
+  } catch (error) {
+    alert("Failed to calculate nutrition");
+  }
+  setIsCalculating(false);
+};
      
 
   const handleIngredientChange = (index, value) => {
@@ -523,6 +552,14 @@ useEffect(() => {
   )}
 />
 
+<button
+  type="button"
+  className="bg-primary text-white rounded-md px-4 py-1 text-sm mt-3 mb-3"
+  onClick={handleCalculateNutrition}
+  disabled={isCalculating}
+>
+  {isCalculating ? "Calculating..." : "Auto Calculate Nutrition"}
+</button>
     {/* Nutrition */}
     <div className='flex flex-col gap-y-3 mt-5 mb-5'>
     <label className='text-lg'>Nutrition Facts:</label>
@@ -535,7 +572,7 @@ useEffect(() => {
                         <FormControl>
                              <div className='flex flex-col gap-y-2'>
             <label className='text-[12px] text-gray-3'>Calories</label>
-            <Input type="number" min="0" {...field} className='w-full h-10  border-gray-3 rounded-md border-[0.5px] text-gray-3 text-sm focus:outline-none focus:border-[1.5px] focus:border-primary focus-visible:ring-0' placeholder=' #'/>
+            <Input type="text" {...field} className='w-full h-10  border-gray-3 rounded-md border-[0.5px] text-gray-3 text-sm focus:outline-none focus:border-[1.5px] focus:border-primary focus-visible:ring-0' placeholder=' #'/>
 
         </div>
 
@@ -555,7 +592,7 @@ useEffect(() => {
                         <FormControl>
                         <div className='flex flex-col gap-y-2'>
             <label className='text-[12px] text-gray-3'>Carbohydrates</label>
-            <Input {...field} min="0" type="number" className='w-full h-10  border-gray-3 rounded-md border-[0.5px] text-gray-3 text-sm focus:outline-none focus:border-[1.5px] focus:border-primary focus-visible:ring-0' placeholder=' #'/>
+            <Input {...field} min="0" type="text" className='w-full h-10  border-gray-3 rounded-md border-[0.5px] text-gray-3 text-sm focus:outline-none focus:border-[1.5px] focus:border-primary focus-visible:ring-0' placeholder=' #'/>
 
         </div>
                         </FormControl>
@@ -573,7 +610,7 @@ useEffect(() => {
                         <FormControl>
                        <div className='flex flex-col gap-y-2'>
             <label className='text-[12px] text-gray-3'>Protein</label>
-            <Input type="number" min="0" {...field} className='w-full h-10  border-gray-3 rounded-md border-[0.5px] text-gray-3 text-sm focus:outline-none focus:border-[1.5px] focus:border-primary focus-visible:ring-0' placeholder=' #'/>
+            <Input type="text" {...field} className='w-full h-10  border-gray-3 rounded-md border-[0.5px] text-gray-3 text-sm focus:outline-none focus:border-[1.5px] focus:border-primary focus-visible:ring-0' placeholder=' #'/>
 
         </div>
                         </FormControl>
@@ -591,7 +628,7 @@ useEffect(() => {
                         <FormControl>
                        <div className='flex flex-col gap-y-2'>
             <label className='text-[12px] text-gray-3'>fats</label>
-            <Input type="number" min="0" {...field} className='w-full h-10  border-gray-3 rounded-md border-[0.5px] text-gray-3 text-sm focus:outline-none focus:border-[1.5px] focus:border-primary focus-visible:ring-0' placeholder=' #'/>
+            <Input type="text" min="0" {...field} className='w-full h-10  border-gray-3 rounded-md border-[0.5px] text-gray-3 text-sm focus:outline-none focus:border-[1.5px] focus:border-primary focus-visible:ring-0' placeholder=' #'/>
 
         </div>
                         </FormControl>
@@ -610,7 +647,7 @@ useEffect(() => {
                         <FormControl>
                         <div className='flex flex-col gap-y-2'>
             <label className='text-[12px] text-gray-3'>fiber</label>
-            <Input type="number" min="0" {...field} className='w-full h-10  border-gray-3 rounded-md border-[0.5px] text-gray-3 text-sm focus:outline-none focus:border-[1.5px] focus:border-primary focus-visible:ring-0' placeholder=' #'/>
+            <Input type="text" min="0" {...field} className='w-full h-10  border-gray-3 rounded-md border-[0.5px] text-gray-3 text-sm focus:outline-none focus:border-[1.5px] focus:border-primary focus-visible:ring-0' placeholder=' #'/>
 
         </div>
                         </FormControl>
@@ -629,7 +666,7 @@ useEffect(() => {
                         <FormControl>
                         <div className='flex flex-col gap-y-2'>
             <label className='text-[12px] text-gray-3'>Net Carbs</label>
-            <Input type="number" min="0" {...field} className='w-full h-10  border-gray-3 rounded-md border-[0.5px] text-gray-3 text-sm focus:outline-none focus:border-[1.5px] focus:border-primary focus-visible:ring-0' placeholder=' #'/>
+            <Input type="text" min="0" {...field} className='w-full h-10  border-gray-3 rounded-md border-[0.5px] text-gray-3 text-sm focus:outline-none focus:border-[1.5px] focus:border-primary focus-visible:ring-0' placeholder=' #'/>
 
         </div>
                         </FormControl>
@@ -647,7 +684,7 @@ useEffect(() => {
                         <FormControl>
                         <div className='flex flex-col gap-y-2'>
             <label className='text-[12px] text-gray-3'>Sodium</label>
-            <Input type="number" {...field} min="0" className='w-full h-10  border-gray-3 rounded-md border-[0.5px] text-gray-3 text-sm focus:outline-none focus:border-[1.5px] focus:border-primary focus-visible:ring-0' placeholder=' #'/>
+            <Input type="text" {...field} min="0" className='w-full h-10  border-gray-3 rounded-md border-[0.5px] text-gray-3 text-sm focus:outline-none focus:border-[1.5px] focus:border-primary focus-visible:ring-0' placeholder=' #'/>
 
         </div>
                         </FormControl>
@@ -665,7 +702,7 @@ useEffect(() => {
                         <FormControl>
                         <div className='flex flex-col gap-y-2'>
             <label className='text-[12px] text-gray-3'>Cholesterol</label>
-            <Input type="number" min="0" {...field} className='w-full h-10  border-gray-3 rounded-md border-[0.5px] text-gray-3 text-sm focus:outline-none focus:border-[1.5px] focus:border-primary focus-visible:ring-0' placeholder=' #'/>
+            <Input type="text" min="0" {...field} className='w-full h-10  border-gray-3 rounded-md border-[0.5px] text-gray-3 text-sm focus:outline-none focus:border-[1.5px] focus:border-primary focus-visible:ring-0' placeholder=' #'/>
 
         </div>
                         </FormControl>

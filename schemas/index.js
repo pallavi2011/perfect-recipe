@@ -1,5 +1,19 @@
 import * as z from "zod";
 
+const cleanAndRound = val => {
+  if (typeof val === "string") {
+    // Remove any non-digit, non-dot, non-minus characters (e.g., "mg", "g", "kcal")
+    const cleaned = val.replace(/[^\d.-]/g, "");
+    const num = parseFloat(cleaned);
+    if (isNaN(num)) return undefined;
+    return Math.round(num);
+  }
+  if (typeof val === "number") {
+    return Math.round(val);
+  }
+  return undefined;
+};
+
 export const SignupSchema = z.object({
   name: z.string().min(1, "Username is required"),
   email: z.string().email("Invalid email address"),
@@ -39,15 +53,14 @@ export const NewRecipeSchema = z.object({
   PrepTimeMinutes: z.string().min(1, "Prep time is required"),
   cuisine: z.string().min(1, "Cuisine is required"),
  
-   calories: z.preprocess(val => val === "" ? undefined : Number(val), z.number().min(0, "Calories required")),
-  protein: z.preprocess(val => val === "" ? undefined : Number(val), z.number().min(0, "protein is required")),
-  fats: z.preprocess(val => val === "" ? undefined : Number(val), z.number().min(0, "fats are required")),
-  carbohydrates: z.preprocess(val => val === "" ? undefined : Number(val), z.number().min(0, "carbs are required")),
-  fiber: z.preprocess(val => val === "" ? undefined : Number(val), z.number().min(0, "fiber are required")),
-  netCarbs: z.preprocess(val => val === "" ? undefined : Number(val), z.number().min(0, "netCarbs are required")),
-  sodium: z.preprocess(val => val === "" ? undefined : Number(val), z.number().min(0, "sodium are required")),
-  cholesterol: z.preprocess(val => val === "" ? undefined : Number(val), z.number().min(0, "cholesterol are required")),
-});
+   calories: z.preprocess(cleanAndRound, z.number().min(0).optional()),
+  protein: z.preprocess(cleanAndRound, z.number().min(0).optional()),
+  fats: z.preprocess(cleanAndRound, z.number().min(0).optional()),
+  carbohydrates: z.preprocess(cleanAndRound, z.number().min(0).optional()),
+  fiber: z.preprocess(cleanAndRound, z.number().min(0).optional()),
+  netCarbs: z.preprocess(cleanAndRound, z.number().min(0).optional()),
+  sodium: z.preprocess(cleanAndRound, z.number().min(0).optional()),
+  cholesterol: z.preprocess(cleanAndRound, z.number().min(0).optional()),});
   
 export const ProfileSchema = z.object({
   name: z.string().min(1, "Username is required"),
